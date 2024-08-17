@@ -22,6 +22,10 @@ Route::prefix("/admin")->group(function() {
     Route::get("/books/{id}/edit", [BookController::class, "EditBookPage"])->name("page.admin.edit_book");
     Route::post("/books/{id}/edit", [BookController::class, "EditBook"])->name("process.admin.edit_book");
 
+    Route::get("/categories", [BookCategoryController::class, "GetList"])->name("page.admin.list_category");
     Route::get("/categories/add", [BookCategoryController::class, "AddCategoryPage"])->name("page.admin.add_category");
     Route::post("/categories/add", [BookCategoryController::class, "AddCategory"])->name("process.admin.add_category");
+    Route::get("/categories/{id}/delete", [BookCategoryController::class, "DeleteCategory"])->name("process.admin.delete_category");
+    Route::get("/categories/{id}/edit", [BookCategoryController::class, "EditPageCategory"])->name("page.admin.edit_category");
+    Route::post("/categories/{id}/edit", [BookCategoryController::class, "EditCategory"])->name("process.admin.edit_category");
 });
