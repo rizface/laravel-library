@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  library:
+    container_name: library
+    image: postgres:15
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5433:5433"
+    command: "-p 5433"
