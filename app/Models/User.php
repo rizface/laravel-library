@@ -37,4 +37,16 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
     ];
+
+    public function FullName() {
+        return $this->firstname . " " . $this->lastname;
+    }
+
+    public function StillBorrowBooks() {
+        return BookLog::where("borrower_id", $this->id)->where("is_returned", false)->count() > 0;
+    }
+
+    public function GetNumOfBorrowedBooks() {
+        return BookLog::where("borrower_id", $this->id)->where("is_returned", false)->count();
+    }
 }

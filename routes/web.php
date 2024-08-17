@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookCategoryController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -15,6 +16,9 @@ Route::get("/register", [AuthController::class, "RegisterPage"])->name("page.reg
 Route::post("/register", [AuthController::class, "Register"])->name("process.register");
 
 Route::prefix("/admin")->group(function() {
+    Route::get("/users", [UserController::class, "ListUserPage"])->name("page.admin.list_user");
+    Route::get("/users/{id}/delete", [UserController::class, "DeleteUser"])->name("process.admin.delete_user");
+
     Route::get("/books", [BookController::class, "GetList"])->name("page.admin.list_book");
     Route::get("/books/add", [BookController::class, "AddBookPage"])->name("page.admin.add_book");
     Route::post("/books/add", [BookController::class, "AddBook"])->name("process.admin.add_book");
