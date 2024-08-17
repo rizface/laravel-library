@@ -25,6 +25,8 @@ Route::prefix("/admin")->group(function() {
     Route::get("/books/{id}/delete", [BookController::class, "DeleteBook"])->name("process.admin.delete_book");
     Route::get("/books/{id}/edit", [BookController::class, "EditBookPage"])->name("page.admin.edit_book");
     Route::post("/books/{id}/edit", [BookController::class, "EditBook"])->name("process.admin.edit_book");
+    Route::get("/books/borrow", [BookController::class, "BorrowBookPage"])->name("page.admin.borrow_book");
+    Route::post("/books/borrow", [BookController::class, "BorrowBook"])->name("process.admin.borrow_book");
 
     Route::get("/categories", [BookCategoryController::class, "GetList"])->name("page.admin.list_category");
     Route::get("/categories/add", [BookCategoryController::class, "AddCategoryPage"])->name("page.admin.add_category");

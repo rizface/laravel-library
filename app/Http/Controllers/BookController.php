@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\BookCategories;
+use App\Models\BookLog;
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Ramsey\Uuid\Uuid;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -161,6 +164,67 @@ class BookController extends Controller
             BookCategories::insert($bookCategories);
 
             Alert::success("Sukses", "Buku berhasil diubah");
+
+            return back();
+        } catch (\Throwable $th) {
+            Alert::error("Error", "Something went wrong");
+            Log::error($th->getMessage());
+            return back();
+        }
+    }
+
+    public function BorrowBookPage() {
+        try {
+            $users = User::where("level", "user")->get();
+            $books = Book::where("qty", ">", 0)->get();
+
+            return view("superadmin.borrowbook", compact("users", "books"));
+        } catch (\Throwable $th) {
+            Alert::error("Error", "Something went wrong");
+            Log::error($th->getMessage());
+            return back();
+        }
+    }
+
+    public function BorrowBook(Request $request) {
+        try {
+            $request->validate([
+                "borrower_id" => ["required", "uuid"],
+                "book_id" => ["required", "uuid"],
+                "start_date" => ["required", "date"],
+                "end_date" => ["required", "date"]
+            ]);
+
+            $book = Book::where("id", $request->book_id)->first();
+            if (!$book) {
+                Alert::error("Gagal", "Buku tidak ditemukan");
+                return back();
+            }
+
+            if ($book->qty <= 0) {
+                Alert::error("Gagal", "Buku habis");
+                return back();
+            }
+
+            $borrower = User::where("id", $request->borrower_id)->first();
+            if (!$borrower) {
+                Alert::error("Gagal", "Peminjam tidak ditemukan");
+                return back();
+            }
+
+            $book->qty -= 1;
+            $book->save();
+
+            BookLog::create([
+                'book_id' => $book->id,
+                'borrower_id' => $borrower->id,
+                'librarian_id' => Auth::user()->id,
+                'is_returned' => false,
+                'borrowed_at' => $request->start_date,
+                'returned_at' => $request->end_date
+            ]);
+
+            Alert::success("Sukses", "Buku berhasil dipinjam");
 
             return back();
         } catch (\Throwable $th) {
