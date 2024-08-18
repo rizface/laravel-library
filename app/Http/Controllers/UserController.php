@@ -113,8 +113,12 @@ class UserController extends Controller
                 "lastname" => $authUser->lastname,
                 "id_num" => $authUser->id_num
             ];
-    
-            return view("superadmin.profile", compact('profile'));
+            
+            if ($authUser->level == "superadmin") {
+                return view("superadmin.profile", compact('profile'));
+            }
+
+            return view("user.profile", compact('profile'));
         } catch (\Throwable $th) {
             Alert::error("Error", "Something went wrong");
             Log::error($th->getMessage());
@@ -147,7 +151,12 @@ class UserController extends Controller
             ]);
 
             Alert::success("Berhasil", "Profil berhasil diperbarui");
-            return redirect()->route("page.admin.profile");
+
+            if ($user->level == "superadmin") {
+                return redirect()->route("page.admin.profile");
+            }
+
+            return redirect()->route("page.user.profile");
         } catch (\Throwable $th) {
             Alert::error("Error", "Something went wrong");
             Log::error($th->getMessage());
@@ -169,6 +178,33 @@ class UserController extends Controller
             Alert::error("Error", "Something went wrong");
             Log::error($th->getMessage());
             return redirect()->route("page.user.dashboard");
+        }
+    }
+
+    public function UpdatePassword(Request $request) {
+        try {
+            $request->validate([
+                "password" => ["required", "min:8", "confirmed"],
+                "password_confirmation" => ["required", "min:8"]
+            ]);
+
+            $user = User::where("id", Auth::user()->id)->first();
+            if (!$user) {
+                Alert::error("Gagal", "Pengguna tidak ditemukan");
+                return redirect()->route("page.user.profile");
+            }
+
+            $user->update([
+                "password" => Hash::make($request->password)
+            ]);
+
+            Alert::success("Berhasil", "Password berhasil diperbarui");
+
+            return redirect()->route("user.process.logout");
+        } catch (\Throwable $th) {
+            Alert::error("Error", "Something went wrong");
+            Log::error($th->getMessage());
+            return redirect()->route("page.user.profile");
         }
     }
 }

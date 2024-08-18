@@ -21,7 +21,10 @@ Route::middleware(GuestMiddleware::class)->group(function() {
 
 Route::middleware(AuthUserMiddleware::class)->prefix("/user")->group(function() {
     Route::get("/", [UserController::class, "UserDashboardPage"])->name("page.user.dashboard");
+    Route::get("/profile", [UserController::class, "ProfilePage"])->name("page.user.profile");
+    Route::post("/profile", [UserController::class, "UpdateProfile"])->name("process.user.profile");
     Route::get("/logout", [AuthController::class, "Logout"])->name("user.process.logout");
+    Route::post("/password", [UserController::class, "UpdatePassword"])->name("process.user.password");
 });
 
 Route::middleware(AuthAdminMiddleware::class)->prefix("/admin")->group(function() {

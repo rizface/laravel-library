@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthUserMiddleware
@@ -15,6 +16,10 @@ class AuthUserMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
+        if (Auth::user()?->level !== "user") {
+            return redirect()->route("page.login");
+        }
+
         return $next($request);
     }
 }
