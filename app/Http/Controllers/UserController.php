@@ -52,9 +52,11 @@ class UserController extends Controller
     public function HistoryUser($id) {
         try {
             $config = Config::first();
-            $histories = BookLog::BorrowerHistories($id, $config); 
+            $histories = BookLog::BorrowerHistories($id, $config);
+            $totalOverdueCost = "Rp.".number_format(BookLog::TotalOverdueCost($id), 0, ",", ".");
+            $totalBooks = BookLog::TotalBooks($id);
 
-            return view("superadmin.historyuser", compact('histories'));
+            return view("superadmin.historyuser", compact('histories', 'totalOverdueCost', 'totalBooks'));
         } catch (\Throwable $th) {
             Alert::error("Error", "Something went wrong");
             Log::error($th->getMessage());

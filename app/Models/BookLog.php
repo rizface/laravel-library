@@ -59,4 +59,14 @@ class BookLog extends Model
             )
             ->paginate(20);
     }
+
+    public static function TotalOverdueCost($borrowerId) {
+        return BookLog::where("borrower_id", $borrowerId)->sum("overdue_cost");
+    }
+
+    public static function TotalBooks($borrowerId) {
+        return BookLog::where("borrower_id", $borrowerId)
+        ->select(DB::raw("count(distinct book_id)"))
+        ->first()->count;
+    }
 }

@@ -1,7 +1,34 @@
 @extends('superadmin.index')
 
 @section('content')
-  <div class="card">
+<div class="row">
+    <div class="col">
+        <div class="small-box bg-info">
+            <div class="inner">
+            <h3>{{$totalOverdueCost}}</h3>
+        
+              <p>Total Denda</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-money-bill"></i>
+            </div>
+          </div>
+    </div>
+    <div class="col">
+        <div class="small-box bg-info">
+            <div class="inner">
+            <h3>{{$totalBooks}}</h3>
+        
+              <p>Total Buku</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-book"></i>
+            </div>
+          </div>
+    </div>
+</div>
+
+<div class="card">
     <div class="card-header">
       List Buku
     </div>
