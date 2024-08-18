@@ -13,7 +13,9 @@
           <img src="{{asset('dist/img/user2-160x160.jpg')}}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">Alexander Pierce</a>
+          <a href="#" class="d-block">
+            {{Auth::user()->FullName()}}
+          </a>
         </div>
       </div>
 
@@ -106,6 +108,14 @@
                 </a>
               </li>
             </ul>
+            <li class="nav-item">
+              <a href="{{route('page.admin.profile')}}" class="nav-link">
+                <i class="nav-icon fas fa-user"></i>
+                <p>
+                  Profil
+                </p>
+              </a>
+            </li>
           <li class="nav-item">
             <a href="{{route('page.admin.list_config')}}" class="nav-link">
               <i class="nav-icon fas fa-lightbulb"></i>

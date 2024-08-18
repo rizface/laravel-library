@@ -5,24 +5,29 @@ use App\Http\Controllers\BookCategoryController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\AuthAdminMiddleware;
+use App\Http\Middleware\GuestMiddleware;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+
+Route::middleware(GuestMiddleware::class)->group(function() {
+    Route::get('/', [AuthController::class, "LoginPage"]);
+    Route::get("/login", [AuthController::class, "LoginPage"])->name("page.login");
+    Route::post("/login", [AuthController::class, "Login"])->name("process.login");
+    Route::get("/register", [AuthController::class, "RegisterPage"])->name("page.register");
+    Route::post("/register", [AuthController::class, "Register"])->name("process.register");
 });
 
-Route::get("/login", [AuthController::class, "LoginPage"])->name("page.login");
-Route::post("/login", [AuthController::class, "Login"])->name("process.login");
-Route::get("/register", [AuthController::class, "RegisterPage"])->name("page.register");
-Route::post("/register", [AuthController::class, "Register"])->name("process.register");
-
-Route::prefix("/admin")->group(function() {
+Route::middleware(AuthAdminMiddleware::class)->prefix("/admin")->group(function() {
     Route::get("/admins", [UserController::class, "ListAdminPage"])->name("page.admin.list_admin");
     Route::get("/users", [UserController::class, "ListUserPage"])->name("page.admin.list_user");
     Route::get("/users/add", [UserController::class, "AddUserPage"])->name("page.admin.add_user");
     Route::post("/users/add", [UserController::class, "AddUser"])->name("process.admin.add_user");
     Route::get("/users/{id}/delete", [UserController::class, "DeleteUser"])->name("process.admin.delete_user");
     Route::get("/users/{id}/history", [UserController::class, "HistoryUser"])->name("page.admin.user_history");
+    Route::get("/users/me", [UserController::class, "ProfilePage"])->name("page.admin.profile");
+    Route::post("/users/me", [UserController::class, "UpdateProfile"])->name("process.admin.profile");
+    
 
     Route::get("/books", [BookController::class, "GetList"])->name("page.admin.list_book");
     Route::get("/books/add", [BookController::class, "AddBookPage"])->name("page.admin.add_book");

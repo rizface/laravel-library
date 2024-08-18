@@ -6,6 +6,7 @@ use App\Models\BookLog;
 use App\Models\Config;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -99,6 +100,56 @@ class UserController extends Controller
             Alert::error("Error", "Something went wrong");
             Log::error($th->getMessage());
             return redirect()->route("page.admin.list_user");
+        }
+    }
+
+    public function ProfilePage() {
+        try {
+            $authUser = Auth::user();
+            $profile = [
+                "firstname" => $authUser->firstname,
+                "lastname" => $authUser->lastname,
+                "id_num" => $authUser->id_num
+            ];
+    
+            return view("superadmin.profile", compact('profile'));
+        } catch (\Throwable $th) {
+            Alert::error("Error", "Something went wrong");
+            Log::error($th->getMessage());
+            return redirect()->route("page.admin.list_user");
+        }
+    }
+
+    public function UpdateProfile(Request $request) {
+        try {
+            $request->validate([
+                "firstname" => ["required"],
+                "id_num" => ["required"],
+            ]);
+
+            $user = User::where("id", Auth::user()->id)->first();
+            if (!$user) {
+                Alert::error("Gagal", "Pengguna tidak ditemukan");
+                return redirect()->route("page.admin.profile");
+            }
+
+            if ($user->id_num != $request->id_num && User::IsIdNumTaken($request->id_num)) {
+                Alert::error("Gagal", "Nomor Identitas sudah digunakan");
+                return redirect()->route("page.admin.profile");
+            }
+
+            $user->update([
+                "firstname" => $request->firstname,
+                "lastname" => $request->lastname,
+                "id_num" => $request->id_num,
+            ]);
+
+            Alert::success("Berhasil", "Profil berhasil diperbarui");
+            return redirect()->route("page.admin.profile");
+        } catch (\Throwable $th) {
+            Alert::error("Error", "Something went wrong");
+            Log::error($th->getMessage());
+            return redirect()->route("page.admin.profile");
         }
     }
 }
