@@ -63,7 +63,7 @@
                     <label for="overdue">Denda Keterlambatan</label>
                     <input
                     disabled 
-                    value="{{$log->overdue < 0 ? 0 : $log->overdue * 1000}}"
+                    value="{{$log->GetOverdue() * intval($config->cost_overdue_per_day)}}"
                     name="overdue" type="number" class="form-control" id="overdue">
                 </div>
             </div>

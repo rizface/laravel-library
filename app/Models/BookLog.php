@@ -22,4 +22,8 @@ class BookLog extends Model
         'overdue_cost',
         'note'
     ];
+
+    public function GetOverdue() {
+        return $this->overdue < 1 ? 0 : $this->overdue;
+    }
 }

@@ -25,8 +25,8 @@
                         <td>{{$l->book_title}}</td>
                         <td>{{$l->borrowed_at}}</td>
                         <td>{{$l->ended_at}}</td>
-                        <td>{{$l->overdue < 1 ? 0 : $l->overdue}} Hari</td>
-                        <td>1000</td>
+                        <td>{{$l->GetOverdue()}} Hari</td>
+                        <td>Rp.{{number_format($config->cost_overdue_per_day * $l->GetOverdue(), 0, "", ".")}}</td>
                         <td>
                             <a href="{{route('process.admin.return_book', ['id' => $l->log_id])}}" class="btn btn-sm btn-outline-primary">Pengembalian</a>
                         </td>

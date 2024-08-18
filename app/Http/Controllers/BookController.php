@@ -6,6 +6,7 @@ use App\Models\Book;
 use App\Models\BookCategories;
 use App\Models\BookLog;
 use App\Models\Category;
+use App\Models\Config;
 use App\Models\User;
 use Carbon\Carbon;
 use DateTime;
@@ -259,7 +260,9 @@ class BookController extends Controller
             ->where("book_logs.is_returned", false)
             ->paginate(20);
 
-            return view("superadmin.listborrowbook", compact("list"));
+            $config = Config::first();
+
+            return view("superadmin.listborrowbook", compact("list", "config"));
         } catch (\Throwable $th) {
             Alert::error("Error", "Something went wrong");
             Log::error($th->getMessage());
@@ -288,7 +291,9 @@ class BookController extends Controller
                 return back();
             }
 
-            return view("superadmin.returnbook", compact("log"));
+            $config = Config::first();
+
+            return view("superadmin.returnbook", compact("log", "config"));
         } catch (\Throwable $th) {
             Alert::error("Error", "Something went wrong");
             Log::error($th->getMessage());
@@ -325,10 +330,12 @@ class BookController extends Controller
             $book->qty += 1;
             $book->save();
 
+            $config = Config::first();
             $overdue = $log->overdue_days < 0 ? 0 : intval($log->overdue_days);
+
             $log->is_returned = true;
             $log->overdue = $overdue;
-            $log->overdue_cost = $overdue * 5000;
+            $log->overdue_cost = $overdue * $config->cost_overdue_per_day;
             $log->returned_at = now();
             $log->note = $request->note;
             $log->save();
