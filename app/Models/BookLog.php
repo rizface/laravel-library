@@ -57,7 +57,7 @@ class BookLog extends Model
                     end as status"
                 )
             )
-            ->orderBy("book_logs.returned_at", "desc")
+            ->orderByRaw("book_logs.returned_at desc nulls first")
             ->paginate(20);
     }
 

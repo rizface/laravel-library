@@ -154,4 +154,21 @@ class UserController extends Controller
             return redirect()->route("page.admin.profile");
         }
     }
+
+    public function UserDashboardPage() {
+        try {
+            $config = Config::first();
+            $user = Auth::user();
+            $id = $user->id;
+            $histories = BookLog::BorrowerHistories($id, $config);
+            $totalOverdueCost = "Rp.".number_format(BookLog::TotalOverdueCost($id), 0, ",", ".");
+            $totalBooks = BookLog::TotalBooks($id);
+
+            return view("user.historyuser", compact('histories', 'totalOverdueCost', 'totalBooks'));
+        } catch (\Throwable $th) {
+            Alert::error("Error", "Something went wrong");
+            Log::error($th->getMessage());
+            return redirect()->route("page.user.dashboard");
+        }
+    }
 }

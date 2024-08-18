@@ -66,7 +66,11 @@ class AuthController extends Controller
             "password" => $request->password
         ]);
 
-        return redirect()->route("page.admin.add_book"); 
+        if ($user->role == "superadmin") {
+            return redirect()->route("page.admin.list_book");
+        }
+
+        return redirect()->route("page.user.dashboard"); 
     }
 
     public function Logout() {

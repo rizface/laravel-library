@@ -6,6 +6,7 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AuthAdminMiddleware;
+use App\Http\Middleware\AuthUserMiddleware;
 use App\Http\Middleware\GuestMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -16,6 +17,11 @@ Route::middleware(GuestMiddleware::class)->group(function() {
     Route::post("/login", [AuthController::class, "Login"])->name("process.login");
     Route::get("/register", [AuthController::class, "RegisterPage"])->name("page.register");
     Route::post("/register", [AuthController::class, "Register"])->name("process.register");
+});
+
+Route::middleware(AuthUserMiddleware::class)->prefix("/user")->group(function() {
+    Route::get("/", [UserController::class, "UserDashboardPage"])->name("page.user.dashboard");
+    Route::get("/logout", [AuthController::class, "Logout"])->name("user.process.logout");
 });
 
 Route::middleware(AuthAdminMiddleware::class)->prefix("/admin")->group(function() {
