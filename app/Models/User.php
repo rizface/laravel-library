@@ -49,4 +49,8 @@ class User extends Authenticatable
     public function GetNumOfBorrowedBooks() {
         return BookLog::where("borrower_id", $this->id)->where("is_returned", false)->count();
     }
+
+    public static function IsIdNumTaken($idNum) {
+        return User::where("id_num", $idNum)->count() > 0;
+    }
 }

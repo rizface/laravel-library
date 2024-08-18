@@ -7,6 +7,7 @@ use App\Models\Config;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -54,7 +55,47 @@ class UserController extends Controller
 
             return view("superadmin.historyuser", compact('histories'));
         } catch (\Throwable $th) {
-            dd($th->getMessage());
+            Alert::error("Error", "Something went wrong");
+            Log::error($th->getMessage());
+            return redirect()->route("page.admin.list_user");
+        }
+    }
+
+    public function AddUserPage() {
+        return view("superadmin.adduser");
+    }
+
+    public function AddUser(Request $request) {
+        try {
+            $request->validate([
+                "firstname" => ["required"],
+                "id_num" => ["required"],
+                "level" => ["required"],
+                "password" => ["required", "min:8"]
+            ]);
+
+            if (User::IsIdNumTaken($request->id_num)) {
+                Alert::error("Gagal", "Nomor Identitas sudah digunakan");
+                return redirect()->route("page.admin.add_user");
+            } 
+
+            User::create([
+                "firstname" => $request->firstname,
+                "lastname" => $request->lastname,
+                "id_num" => $request->id_num,
+                "level" => $request->level,
+                "password" => Hash::make($request->password),
+                "is_active" => true
+            ]);
+
+            Alert::success("Berhasil", "Pengguna berhasil ditambahkan");
+
+            if ($request->level == "user") {
+                return redirect()->route("page.admin.list_user");
+            }
+            
+            return redirect()->route("page.admin.list_admin");
+        } catch (\Throwable $th) {
             Alert::error("Error", "Something went wrong");
             Log::error($th->getMessage());
             return redirect()->route("page.admin.list_user");

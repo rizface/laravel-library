@@ -19,6 +19,8 @@ Route::post("/register", [AuthController::class, "Register"])->name("process.reg
 Route::prefix("/admin")->group(function() {
     Route::get("/admins", [UserController::class, "ListAdminPage"])->name("page.admin.list_admin");
     Route::get("/users", [UserController::class, "ListUserPage"])->name("page.admin.list_user");
+    Route::get("/users/add", [UserController::class, "AddUserPage"])->name("page.admin.add_user");
+    Route::post("/users/add", [UserController::class, "AddUser"])->name("process.admin.add_user");
     Route::get("/users/{id}/delete", [UserController::class, "DeleteUser"])->name("process.admin.delete_user");
     Route::get("/users/{id}/history", [UserController::class, "HistoryUser"])->name("page.admin.user_history");
 
