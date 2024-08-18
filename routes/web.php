@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookCategoryController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -37,4 +38,7 @@ Route::prefix("/admin")->group(function() {
     Route::get("/categories/{id}/delete", [BookCategoryController::class, "DeleteCategory"])->name("process.admin.delete_category");
     Route::get("/categories/{id}/edit", [BookCategoryController::class, "EditPageCategory"])->name("page.admin.edit_category");
     Route::post("/categories/{id}/edit", [BookCategoryController::class, "EditCategory"])->name("process.admin.edit_category");
+
+    Route::get("/config", [ConfigController::class, "ConfigPage"])->name("page.admin.list_config");
+    Route::post("/config", [ConfigController::class, "Config"])->name("process.admin.config");
 });

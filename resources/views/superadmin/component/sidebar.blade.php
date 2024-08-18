@@ -100,6 +100,13 @@
                 </a>
               </li>
             </ul>
+          <li class="nav-item">
+            <a href="{{route('page.admin.list_config')}}" class="nav-link">
+              <i class="nav-icon fas fa-lightbulb"></i>
+              <p>
+                Pengaturan
+              </p>
+            </a>
           </li>
         </ul>
       </nav>
