@@ -19,6 +19,7 @@ Route::post("/register", [AuthController::class, "Register"])->name("process.reg
 Route::prefix("/admin")->group(function() {
     Route::get("/users", [UserController::class, "ListUserPage"])->name("page.admin.list_user");
     Route::get("/users/{id}/delete", [UserController::class, "DeleteUser"])->name("process.admin.delete_user");
+    Route::get("/users/{id}/history", [UserController::class, "HistoryUser"])->name("page.admin.user_history");
 
     Route::get("/books", [BookController::class, "GetList"])->name("page.admin.list_book");
     Route::get("/books/add", [BookController::class, "AddBookPage"])->name("page.admin.add_book");

@@ -22,7 +22,7 @@
                         <td>{{$u->FullName()}}</td>
                         <td>{{$u->GetNumOfBorrowedBooks()}}</td>
                         <td>
-                            {{-- <a href="{{route('page.admin.edit_book', ['id' => $b->id])}}" class="btn btn-sm btn-outline-warning">Edit</a> --}}
+                            <a href="{{route("page.admin.user_history", ["id" => $u->id])}}" class="btn btn-sm btn-outline-primary">Riwayat</a>
                             <a 
                             onclick="return confirm('Apakah kamu yakin ingin menghapus pengguna ini ?')"
                             href="{{route('process.admin.delete_user', ['id' => $u->id])}}" class="btn btn-sm btn-outline-danger">Hapus</a>
