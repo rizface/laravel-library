@@ -18,6 +18,12 @@ class UserController extends Controller
         return view("superadmin.listuser", compact('users'));
     }
 
+    public function ListAdminPage() {
+        $users = User::where("level", "superadmin")->paginate(20);
+
+        return view("superadmin.listadmin", compact('users'));
+    }
+
     public function DeleteUser($id) {
         try {
             $user = User::where("id", $id)->first();
@@ -44,35 +50,7 @@ class UserController extends Controller
     public function HistoryUser($id) {
         try {
             $config = Config::first();
-            $histories = BookLog::where("borrower_id", $id)
-            ->join("books", "books.id", "=", "book_logs.book_id")
-            ->join("users", "users.id", "=", "book_logs.borrower_id")
-            ->select(
-                "books.title",
-                DB::raw("book_logs.borrowed_at::date as borrowed_at"),
-                DB::raw("book_logs.ended_at::date as ended_at"),
-                DB::raw("book_logs.returned_at::date as returned_at"),
-                "book_logs.is_returned",
-                DB::raw("
-                    case 
-                        when is_returned = false then date_part('day', now() - ended_at)
-                        else overdue
-                    end as overdue
-                "),
-                DB::raw("
-                    case
-                        when  is_returned = false then date_part('day', now() - ended_at) * $config->cost_overdue_per_day
-                        else overdue_cost
-                    end as overdue_cost
-                "),
-                DB::raw("
-                    case 
-                        when is_returned = false then 'Belum dikembalikan'
-                        else 'Sudah dikembalikan'
-                    end as status"
-                )
-            )
-            ->paginate(20); 
+            $histories = BookLog::BorrowerHistories($id, $config); 
 
             return view("superadmin.historyuser", compact('histories'));
         } catch (\Throwable $th) {
