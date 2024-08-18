@@ -16,6 +16,10 @@ class BookLog extends Model
         'librarian_id',
         'is_returned',
         'borrowed_at',
-        'returned_at'
+        'ended_at',
+        'returned_at',
+        'overdue',
+        'overdue_cost',
+        'note'
     ];
 }

@@ -34,7 +34,8 @@ class Book extends Model
     }
 
     public function NumAvailable() {
-        return $this->qty - BookLog::where("book_id", $this->id)->where("is_returned", false)->count();
+        $qty = $this->qty - BookLog::where("book_id", $this->id)->where("is_returned", false)->count();
+        return $qty > 0 ? $qty : 0;
     }
 
     public static function IsExists($id) {

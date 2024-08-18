@@ -7,7 +7,7 @@
 @section('content')
   <div class="card">
     <div class="card-header">
-      Tambah Buku
+      Edit Buku
     </div>
     <div class="card-body">
       <form method="POST" action="{{route('process.admin.edit_book', ["id" => $book->id])}}">

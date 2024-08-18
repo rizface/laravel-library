@@ -70,6 +70,12 @@
                   <p>Pinjam Buku</p>
                 </a>
               </li>
+              <li class="nav-item">
+                <a href="{{route('page.admin.borrow_list')}}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>List Peminjaman Buku</p>
+                </a>
+              </li>
             </ul>
           </li>
           <li class="nav-item">

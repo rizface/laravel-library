@@ -7,8 +7,11 @@ use App\Models\BookCategories;
 use App\Models\BookLog;
 use App\Models\Category;
 use App\Models\User;
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Ramsey\Uuid\Uuid;
 use RealRashid\SweetAlert\Facades\Alert;
@@ -221,12 +224,118 @@ class BookController extends Controller
                 'librarian_id' => Auth::user()->id,
                 'is_returned' => false,
                 'borrowed_at' => $request->start_date,
-                'returned_at' => $request->end_date
+                "ended_at" => $request->end_date,
+                "overdue"  => 0,
+                "overdue_cost" => 0,
+                "note" => "",
+                'returned_at' => null
             ]);
 
             Alert::success("Sukses", "Buku berhasil dipinjam");
 
             return back();
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+            Alert::error("Error", "Something went wrong");
+            Log::error($th->getMessage());
+            return back();
+        }
+    }
+
+    public function BorrowBookList() {
+        try {
+            $list = BookLog::join("books", "books.id", "=", "book_logs.book_id")
+            ->join("users", "users.id", "=", "book_logs.borrower_id")
+            ->select(
+                "book_logs.id as log_id",
+                "books.id as book_id",
+                "users.id as borrower_id",
+                "books.title as book_title",
+                DB::raw("concat(users.firstname, ' ', users.lastname) as borrower_name"),
+                DB::raw("book_logs.borrowed_at::date as borrowed_at"),
+                DB::raw("book_logs.ended_at::date as ended_at"),
+                DB::raw("date_part('day', now() - book_logs.ended_at) as overdue")
+            )
+            ->where("book_logs.is_returned", false)
+            ->paginate(20);
+
+            return view("superadmin.listborrowbook", compact("list"));
+        } catch (\Throwable $th) {
+            Alert::error("Error", "Something went wrong");
+            Log::error($th->getMessage());
+            return back();
+        }
+    }
+
+    public function ReturnBookPage(Request $request, $id) {
+        try {
+            $log = BookLog::join("books", "books.id", "=", "book_logs.book_id")
+            ->join("users", "users.id", "=", "book_logs.borrower_id")
+            ->select(
+                "book_logs.id as log_id",
+                "books.id as book_id",
+                "users.id as borrower_id",
+                "books.title as book_title",
+                DB::raw("concat(users.firstname, ' ', users.lastname) as borrower_name"),
+                DB::raw("book_logs.borrowed_at::date as borrowed_at"),
+                DB::raw("book_logs.ended_at::date as ended_at"),
+                DB::raw("date_part('day', now() - book_logs.ended_at) as overdue")
+            )
+            ->where("book_logs.id", $id)
+            ->first();
+            if (!$log) {
+                Alert::error("Gagal", "Data peminjaman tidak ditemukan");
+                return back();
+            }
+
+            return view("superadmin.returnbook", compact("log"));
+        } catch (\Throwable $th) {
+            Alert::error("Error", "Something went wrong");
+            Log::error($th->getMessage());
+            return back();
+        }
+    }
+
+    public function ReturnBook(Request $request, $id) {
+        try {
+            $log = BookLog::where("id", $id)
+            ->select(
+                "id",
+                "book_id",
+                "borrower_id",
+                "librarian_id",
+                "is_returned",
+                "borrowed_at",
+                "ended_at",
+                "returned_at",
+                DB::raw("date_part('day', now() - book_logs.ended_at) as overdue_days")
+            )
+            ->first();
+            if (!$log) {
+                Alert::error("Gagal", "Data peminjaman tidak ditemukan");
+                return back();
+            }
+
+            $book = Book::where("id", $log->book_id)->first();
+            if (!$book) {
+                Alert::error("Gagal", "Buku tidak ditemukan");
+                return back();
+            }
+
+            $book->qty += 1;
+            $book->save();
+
+            $overdue = $log->overdue_days < 0 ? 0 : intval($log->overdue_days);
+            $log->is_returned = true;
+            $log->overdue = $overdue;
+            $log->overdue_cost = $overdue * 5000;
+            $log->returned_at = now();
+            $log->note = $request->note;
+            $log->save();
+
+            Alert::success("Sukses", "Buku berhasil dikembalikan");
+
+            return redirect()->route("page.admin.borrow_list");
         } catch (\Throwable $th) {
             Alert::error("Error", "Something went wrong");
             Log::error($th->getMessage());
