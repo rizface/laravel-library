@@ -68,4 +68,9 @@ class AuthController extends Controller
 
         return redirect()->route("page.admin.add_book"); 
     }
+
+    public function Logout() {
+        Auth::logout();
+        return redirect()->route("page.login");
+    }
 }

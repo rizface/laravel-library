@@ -57,6 +57,7 @@ class BookLog extends Model
                     end as status"
                 )
             )
+            ->orderBy("book_logs.returned_at", "desc")
             ->paginate(20);
     }
 

@@ -51,4 +51,6 @@ Route::middleware(AuthAdminMiddleware::class)->prefix("/admin")->group(function(
 
     Route::get("/config", [ConfigController::class, "ConfigPage"])->name("page.admin.list_config");
     Route::post("/config", [ConfigController::class, "Config"])->name("process.admin.config");
+
+    Route::get("/logout", [AuthController::class, "Logout"])->name("process.logout");
 });
