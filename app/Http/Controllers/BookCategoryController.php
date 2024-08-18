@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BookCategories;
 use App\Models\BookCategory;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -103,6 +104,32 @@ class BookCategoryController extends Controller
             Alert::success("Sukses", "Kategori berhasil diubah");
 
             return redirect()->route("page.admin.edit_category", $id);
+        } catch (\Throwable $th) {
+            Alert::error("Error", "Something went wrong");
+            Log::error($th->getMessage());
+            return back();
+        }
+    }
+
+    public function ListBookCategory($id) {
+        try {
+            $books = BookCategories::join("books", "book_categories.book_id", "=", "books.id")
+            ->join("book_logs", "books.id", "=", "book_logs.book_id")
+            ->where("book_categories.category_id", $id)
+            ->select(
+                "books.id",
+                "books.isbn",
+                "books.title",
+                "books.author",
+                "books.publisher",
+                "books.release_date",
+                DB::raw("count(book_logs.id) as total")
+            )
+            ->groupBy("books.id", "books.isbn", "books.title", "books.author", "books.publisher", "books.release_date")
+            ->orderBy("total", "desc")
+            ->paginate(20);
+
+            return view("superadmin.listcatbooks", compact("books"));
         } catch (\Throwable $th) {
             Alert::error("Error", "Something went wrong");
             Log::error($th->getMessage());

@@ -20,6 +20,7 @@
                         <td class="text-capitalize">{{$c->name}}</td>
                         <td>{{$c->total}}</td>
                         <td>
+                            <a href="{{route('page.admin.list_book_category', ['id' => $c->id])}}" class="btn btn-sm btn-outline-primary">Detail</a>
                             <a href="{{route('page.admin.edit_category', ['id' => $c->id])}}" class="btn btn-sm btn-outline-warning">Edit</a>
                             <a 
                             onclick="return confirm('Apakah kamu yakin ingin menghapus kategori ini ?')"

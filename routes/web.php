@@ -47,6 +47,7 @@ Route::middleware(AuthAdminMiddleware::class)->prefix("/admin")->group(function(
     Route::get("/categories/{id}/delete", [BookCategoryController::class, "DeleteCategory"])->name("process.admin.delete_category");
     Route::get("/categories/{id}/edit", [BookCategoryController::class, "EditPageCategory"])->name("page.admin.edit_category");
     Route::post("/categories/{id}/edit", [BookCategoryController::class, "EditCategory"])->name("process.admin.edit_category");
+    Route::get("/categories/{id}/books", [BookCategoryController::class, "ListBookCategory"])->name("page.admin.list_book_category");
 
     Route::get("/config", [ConfigController::class, "ConfigPage"])->name("page.admin.list_config");
     Route::post("/config", [ConfigController::class, "Config"])->name("process.admin.config");
