@@ -66,7 +66,7 @@ class AuthController extends Controller
             "password" => $request->password
         ]);
 
-        if ($user->role == "superadmin") {
+        if ($user->level == "superadmin") {
             return redirect()->route("page.admin.list_book");
         }
 
